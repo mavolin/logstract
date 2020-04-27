@@ -7,7 +7,7 @@ import (
 )
 
 // Zap creates a wrapper for the passed zap SugaredLogger.
-func Zap(l zap.SugaredLogger) logstract.LogFunc {
+func Zap(l *zap.SugaredLogger) logstract.LogFunc {
 	return func(lvl logstract.Lvl, msg string, fields logstract.Fields) {
 		s := make([]interface{}, 0)
 

@@ -2,14 +2,18 @@ package logstract
 
 import "fmt"
 
+// Default is the default that should be used by implementing libraries.
+// It acts like a placeholder and prevents nil pointer dereference panics, while generating no logs until swapped out.
+var Default = new(Logger)
+
 // Logger wraps LogFunc to provide convenient logging.
 type Logger struct {
 	// l is the LogFunc used for logging.
 	l LogFunc
 }
 
-// NewLogger creates a new Logger using the passed LogFunc.
-func NewLogger(l LogFunc) *Logger {
+// New creates a new Logger using the passed LogFunc.
+func New(l LogFunc) *Logger {
 	return &Logger{
 		l: l,
 	}
@@ -114,13 +118,15 @@ type Entry struct {
 // WithField add the passed field to the entry.
 func (e *Entry) WithField(k string, v interface{}) *Entry {
 	if e.l != nil {
-		if e.fields == nil {
-			e.fields = Fields{
-				k: v,
-			}
-		} else {
-			e.fields[k] = v
+		return e
+	}
+
+	if e.fields == nil {
+		e.fields = Fields{
+			k: v,
 		}
+	} else {
+		e.fields[k] = v
 	}
 
 	return e
@@ -129,12 +135,14 @@ func (e *Entry) WithField(k string, v interface{}) *Entry {
 // WithFields creates an Entry with the passed Fields.
 func (e *Entry) WithFields(f Fields) *Entry {
 	if e.l != nil {
-		if e.fields == nil {
-			e.fields = f
-		} else {
-			for k, v := range f {
-				e.fields[k] = v
-			}
+		return e
+	}
+
+	if e.fields == nil {
+		e.fields = f
+	} else {
+		for k, v := range f {
+			e.fields[k] = v
 		}
 	}
 
@@ -144,69 +152,69 @@ func (e *Entry) WithFields(f Fields) *Entry {
 // Debug creates a debug-level log entry, using the passed message.
 func (e *Entry) Debug(a ...interface{}) {
 	if e != nil {
-		e.l(LvlDebug, fmt.Sprint(a...), nil)
+		e.l(LvlDebug, fmt.Sprint(a...), e.fields)
 	}
 }
 
 // Debugf creates a debug-level log entry, by formatting the passed message.
 func (e *Entry) Debugf(f string, a ...interface{}) {
 	if e != nil {
-		e.l(LvlDebug, fmt.Sprintf(f, a...), nil)
+		e.l(LvlDebug, fmt.Sprintf(f, a...), e.fields)
 	}
 }
 
 // Info creates a info-level log entry, using the passed message.
 func (e *Entry) Info(a ...interface{}) {
 	if e != nil {
-		e.l(LvlInfo, fmt.Sprint(a...), nil)
+		e.l(LvlInfo, fmt.Sprint(a...), e.fields)
 	}
 }
 
 // Infof creates a info-level log entry, by formatting the passed message.
 func (e *Entry) Infof(f string, a ...interface{}) {
 	if e != nil {
-		e.l(LvlInfo, fmt.Sprintf(f, a...), nil)
+		e.l(LvlInfo, fmt.Sprintf(f, a...), e.fields)
 	}
 }
 
 // Warn creates a warning-level log entry, using the passed message.
 func (e *Entry) Warn(a ...interface{}) {
 	if e != nil {
-		e.l(LvlWarn, fmt.Sprint(a...), nil)
+		e.l(LvlWarn, fmt.Sprint(a...), e.fields)
 	}
 }
 
 // Warnf creates a warning-level log entry, by formatting the passed message.
 func (e *Entry) Warnf(f string, a ...interface{}) {
 	if e != nil {
-		e.l(LvlWarn, fmt.Sprintf(f, a...), nil)
+		e.l(LvlWarn, fmt.Sprintf(f, a...), e.fields)
 	}
 }
 
 // Error creates a error-level log entry, using the passed message.
 func (e *Entry) Error(a ...interface{}) {
 	if e != nil {
-		e.l(LvlError, fmt.Sprint(a...), nil)
+		e.l(LvlError, fmt.Sprint(a...), e.fields)
 	}
 }
 
 // Errorf creates a error-level log entry, by formatting the passed message.
 func (e *Entry) Errorf(f string, a ...interface{}) {
 	if e != nil {
-		e.l(LvlError, fmt.Sprintf(f, a...), nil)
+		e.l(LvlError, fmt.Sprintf(f, a...), e.fields)
 	}
 }
 
 // Fatal creates a fatal-level log entry, using the passed message.
 func (e *Entry) Fatal(a ...interface{}) {
 	if e != nil {
-		e.l(LvlFatal, fmt.Sprint(a...), nil)
+		e.l(LvlFatal, fmt.Sprint(a...), e.fields)
 	}
 }
 
 // Fatalf creates a fatal-level log entry, by formatting the passed message.
 func (e *Entry) Fatalf(f string, a ...interface{}) {
 	if e != nil {
-		e.l(LvlFatal, fmt.Sprintf(f, a...), nil)
+		e.l(LvlFatal, fmt.Sprintf(f, a...), e.fields)
 	}
 }

@@ -17,22 +17,18 @@ Using logstract is simple.
 Typicallly, you create an exposed variable `Logger *Logger` with `logstract.Default` as value, in your core package.
 This ensures that you can always log, without risking a nil dereference panic.
 
+```go
+package core
+
+import "github.com/mavolin/logstract/pkg/logstract"
+
+var Logger = logstract.Default
+```
+
 ### Logging
 
 If you want to log, simply use your `Logger` variable:
 ```go
-package core
-
-import (
-
-"math/rand"
-
-
-"github.com/mavolin/logstract/pkg/logstract"
-)
-
-var Logger = logstract.Default
-
 func Icecream(free bool, flavor string)  {
     Logger.
         WithFields(logstract.Fields{
@@ -55,17 +51,16 @@ func Icecream(free bool, flavor string)  {
 }
 ```
 
-If the user doesn't set a `Logger` implementation, no logs will be created and if `Logger` is set, then logs will be generated.
-
+Logs will only be created, if the user replaces `logstract.Default` with an actual `Logger` implementation.
 ## I want to use a library that uses logstract, what do I need to do?
 
-If the library you are using is following convention, then using your favorite logger can be done in a few steps.
+Follow these steps, and get your library hooked up with your favorite logger in no time.
 
 ### Using a natively supported logger
 
 This makes it even more easy:
 
-Just set the `Logger` variable of your library to use one of the default implementations:
+Just set the `Logger` variable of your library to one of the default implementations:
 
 Example:
 ```go
@@ -73,7 +68,7 @@ func main() {
     l, _ := zap.NewProduction()
     sugar := l.Sugar()
 
-    thatcoollib.Logger = logstract.NewLogger(impl.Zap(sugar))
+    thatcoollib.Logger = logstract.New(impl.Zap(sugar))
 }
 ```
 

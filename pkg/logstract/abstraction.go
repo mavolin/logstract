@@ -21,5 +21,6 @@ type (
 	Fields map[string]interface{}
 
 	// LogFunc is the abstraction of the logger.
+	// If there are no fields, fields will be nil.
 	LogFunc func(lvl Lvl, msg string, fields Fields)
 )

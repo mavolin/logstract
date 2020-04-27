@@ -8,8 +8,8 @@ type Logger struct {
 	l LogFunc
 }
 
-// NewLogger creates a new Logger using the passed LogFunc.
-func NewLogger(l LogFunc) *Logger {
+// New creates a new Logger using the passed LogFunc.
+func New(l LogFunc) *Logger {
 	return &Logger{
 		l: l,
 	}

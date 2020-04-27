@@ -23,22 +23,35 @@ If you want to log, simply use your `Logger` variable:
 ```go
 package core
 
-import "github.com/mavolin/logstract/pkg/logstract"
+import (
+
+"math/rand"
+
+
+"github.com/mavolin/logstract/pkg/logstract"
+)
 
 var Logger = logstract.Default
 
-func Icecream(free bool)  {
+func Icecream(free bool, flavor string)  {
     Logger.
-        WithField("free", free).
+        WithFields(logstract.Fields{
+            "free": free,
+            "flavor": flavor,
+        }).
         Debug("yay, ice cream!")
     
     if free {
         Logger.Warn("free icecream for everyone, gonna be expensive 🍦")
     }
 
-    Logger.
-        WithField("mc_donalds", true).
-        Fatal("sorry, the ice cream is machine broken")
+    if rand.Float64() <= 0.99 {
+        Logger.
+            WithField("mc_donalds", true).
+            Fatal("the ice cream is machine broken")
+    } else {
+        Logger.Infof("%s ice cream ready for pickup", flavor)
+    }
 }
 ```
 

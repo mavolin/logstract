@@ -2,6 +2,10 @@ package logstract
 
 import "fmt"
 
+// Default is the default that should be used by implementing libraries.
+// It acts like a placeholder and prevents nil pointer dereference panics, while generating no logs until swapped out.
+var Default = new(Logger)
+
 // Logger wraps LogFunc to provide convenient logging.
 type Logger struct {
 	// l is the LogFunc used for logging.

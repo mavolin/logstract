@@ -11,7 +11,7 @@ func Logrus(l *logrus.Logger) logstract.LogFunc {
 	return func(lvl logstract.Lvl, msg string, fields logstract.Fields) {
 		e := logrus.NewEntry(l)
 
-		if fields == nil {
+		if len(fields) != 0 {
 			e.WithFields(logrus.Fields(fields))
 		}
 

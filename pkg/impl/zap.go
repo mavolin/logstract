@@ -11,7 +11,7 @@ func Zap(l *zap.SugaredLogger) logstract.LogFunc {
 	return func(lvl logstract.Lvl, msg string, fields logstract.Fields) {
 		s := make([]interface{}, 0)
 
-		if fields != nil {
+		if len(fields) != 0 {
 			s = fieldsToSlice(fields)
 		}
 

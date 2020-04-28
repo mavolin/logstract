@@ -1,7 +1,7 @@
 # Contributing
 
 We would love to see the ideas you want to bring in to improve this project.
-But before you get started, make sure to follow the guidelines below:
+Before you get started, make sure to follow the guidelines below:
 
 ## Contributing through issues
 
@@ -15,6 +15,7 @@ If you propose a feature, use `feat(PACKAGE_NAME): TITLE`, for a bug replace the
 Other types are `style` `refactor` (e.g. for shortening code) and `test`.
 If your change is breaking (in the semantic versioning sense) add an exclamation mark behind the scope, e.g. `feat(package)!: title`.
 
+If your issue proposes changes to multiple packages, or you don't know which package is affected, leave the `(PACKAGE_NAME)` part out, e.g. `feat: that one thing that's missing`.
 
 
 ## Code Contributions
@@ -23,10 +24,10 @@ If your change is breaking (in the semantic versioning sense) add an exclamation
 Before you hand in a PR, open an issue and tell us you'll be handling in an PR.
 This gives us the ability to point out important things you should keep in mind and to tell you if such a feature would fit into this project at all.
 
-### Commiting
+### Committing
 
 This is by far the most important guideline.
-Please make small, thoughtfull commits, a commit like `feat: add xy` with 20 new files is rarely appropriate.
+Please make small, thoughtful commits, a commit like `feat: add xy` with 20 new files is rarely appropriate.
 
 #### Conventional Commits
 
@@ -45,32 +46,48 @@ This of course only applies if the function is testable.
 ### Code Style
 
 Make sure all code is `gofmt -s`'ed and passes the golangci-lint checks.
-If you're code fails a lint task, but the way you did it is justified, add an execption to the `.golangci.yml` file with a comment explaining, why this exception exists.
+If your code fails a lint task, but the way you did it is justified, add an exception to the `.golangci.yml` file with a comment explaining, why this exception exists.
 
 ### Testing
 
 If possible and appropriate you should fully test the code you submit.
-Each function exposed and unexposed should have a signle test, which either tests directly or is split into subtests, preferrably table-driven.
+Each function exposed and unexposed should have a single test, which either tests directly or is split into subtests, preferably table-driven.
 
-In an effort to reduce the loc in test while improving the quality of feedback on errors, [testify](https://github.com/stretchr/testify) is used for testing.
+In an effort to ease the writing of tests while improving the quality of feedback on failure, we decided to use [testify](https://github.com/stretchr/testify) for all testing.
 
-#### Naming
+#### Scheme of a Test
 
-Please prefix your variables correctly:
-* `testX` for test data that is passed to the tested function.
-  These variables are declared first.
-* `expect` (or `expectX` for multiple return values, errors excluded) is the value expected to be returned from the tested function.
-  These variable come second.
-* `actual` (or `actualX` for multiple return values, errors excluded) is the value actually returned by the tested function.
-  These variable come last.
+A test should follow this scheme:
+
+```go
+func TestSomething(t *testing.T) {
+    s := []string{"parameters needed for the test or its preparation", "are declared first"}
+    qty := 3
+    
+    expect := 2 // we declare the expected values second
+    // use expectX, expectY etc. for multiple returns
+
+    a.needed(s) // prerequisites needed before invoking the function, e.g. a http mock
+    
+    actual := Something(s, qty) // get the value computed by the tested function
+    // again, use actualX, actualY etc. for multiple returns
+
+    assert.Equal(t, expect, actual)
+}
+```
 
 #### Table-Driven Tests
 
-If there is a single table, it should be called testCases, multiple use the name `<type>Cases`, e.g. `successCases` and `failureCases`.
-A table of length 1 may be replaced by a standard `t.Run`.
+If there is a single table, it should be called `cases`, multiple use the name `<type>Cases`, e.g. `successCases` and `failureCases`.
+The same goes, if there is a table testing only a portion of a function and multiple non-table-driven tests in addition.
+
+The struct used in tables is always anonymous.
+
+Every case in a table should run in its own subtest (`t.Run`).
+Additionally, if there are multiple tables, each table has its own subtest, in which he calls his cases.
 
 ### Opening a Pull Request
 
 When opening a pull request, merge against `develop` and use the title of the issue as the PR title.
 
-A Pull Request must pass all test, before being merged.
+A Pull Request must pass all test, to be merged.

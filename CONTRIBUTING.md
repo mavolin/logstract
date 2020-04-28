@@ -52,6 +52,8 @@ If you're code fails a lint task, but the way you did it is justified, add an ex
 If possible and appropriate you should fully test the code you submit.
 Each function exposed and unexposed should have a signle test, which either tests directly or is split into subtests, preferrably table-driven.
 
+In an effort to reduce the loc in test while improving the quality of feedback on errors, [testify](https://github.com/stretchr/testify) is used for testing.
+
 #### Naming
 
 Please prefix your variables correctly:
@@ -61,12 +63,6 @@ Please prefix your variables correctly:
   These variable come second.
 * `actual` (or `actualX` for multiple return values, errors excluded) is the value actually returned by the tested function.
   These variable come last.
-
-#### Error Reports
-
-If `actual != expect` or `!reflect.DeepEqual(actual, expect)`, an error in the form of: `expected #{name} to return: #{expect}, but got #{actual}` should be reported (`t.Errorf` or `t.Fatalf`).
-Name is either `package.struct.function` or `package.function` and `actual` and `expect` are formatted using `%+v`.
-If a function unexpectedly returns an error, the error message should be formatted like so: `#{name} returned an error: #{err}` where name uses the same scheme as above and err is the value of `err.Error()`.
 
 #### Table-Driven Tests
 

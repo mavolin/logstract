@@ -32,7 +32,7 @@ func Zap(l *zap.SugaredLogger) logstract.LogFunc {
 
 // fieldsToSlice converts the passed Fields to a slice, as used by zap.
 func fieldsToSlice(f logstract.Fields) (s []interface{}) {
-	s = make([]interface{}, 2*len(f))
+	s = make([]interface{}, 0, 2*len(f))
 
 	for k, v := range f {
 		s = append(s, k, v)

@@ -1,8 +1,9 @@
 package impl
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/mavolin/logstract/pkg/logstract"
 )
@@ -10,15 +11,10 @@ import (
 func TestFieldsToSlice(t *testing.T) {
 	testFields := logstract.Fields{
 		"a": "b",
-		"c": 3,
-		"d": true,
 	}
 
-	expect := []interface{}{"a", "b", "c", 3, "d", true}
-
+	expect := []interface{}{"a", "b"}
 	actual := fieldsToSlice(testFields)
 
-	if reflect.DeepEqual(actual, expect) {
-		t.Errorf("expected: %+v, but got: %+v", expect, actual)
-	}
+	assert.Equal(t, expect, actual)
 }

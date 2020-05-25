@@ -1,7 +1,7 @@
 # Contributing
 
 We would love to see the ideas you want to bring in to improve this project.
-Before you get started, make sure to read the guidelines below. 
+Before you get started, make sure to follow the guidelines below:
 
 ## Contributing through issues
 
@@ -47,7 +47,7 @@ This of course only applies if the function is testable.
 ### Code Style
 
 Make sure all code is `gofmt -s`'ed and passes the golangci-lint checks.
-If your code fails a lint task, but the way you did it is justified, add an exception to the `.golangci.yml` file with a comment explaining, why this exception necessary.
+If your code fails a lint task, but the way you did it is justified, add an exception to the `.golangci.yml` file with a comment explaining, why this exception exists.
 
 ### Testing
 
@@ -79,36 +79,14 @@ func TestSomething(t *testing.T) {
 
 #### Table-Driven Tests
 
-If there is a single table, it should be called `cases`, multiple use the name `<type>Cases`, e.g. `successCases` and `failureCases`, for tests that test the output at valid input (a success case), and those that aim to provoke an error (a failure case) and therefore work different from a success case.
-The same goes if there is a table that's testing only a portion of a function and multiple non-table-driven tests in addition.
+If there is a single table, it should be called `cases`, multiple use the name `<type>Cases`, e.g. `successCases` and `failureCases`.
+The same goes, if there is a table testing only a portion of a function and multiple non-table-driven tests in addition.
 
 The struct used in tables is always anonymous.
 
-Every sub-test including table driven ones should have a name that clearly shows what is being done.
-For table-driven tests this name is either obtained from a `name` field or computed using the other fields in the table entry.
-
 Every case in a table should run in its own subtest (`t.Run`).
-Additionally, if there are multiple tables, each table has its own subtest, in which he calls his cases:
+Additionally, if there are multiple tables, each table has its own subtest, in which he calls his cases.
 
-```
-TestSomething
-    testCase-1
-    testCase-2
-
-    additionalTest-1
-```
-
-```
-TestSomething
-    successCases
-        successCase-1
-        successCase-2
-    failureCases
-        failureCase-1
-        failureCase-2
-
-    additionalTest-1
-```
 
 ### Opening a Pull Request
 

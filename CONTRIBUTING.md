@@ -11,9 +11,10 @@ The issue templates will take care of most of the requirements, but there is one
 ### Titles
 
 We not only use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for commits, but also for issue titles.
-If you propose a feature, use `feat(PACKAGE_NAME): TITLE`, for a bug replace the `feat` with `fix`, for `docs` use `docs`, you get the hang.
-Other types are `style` `refactor` (e.g. for shortening code) and `test`.
+If you propose a feature, use `feat(PACKAGE_NAME): TITLE`, for a bug replace the `feat` with a `fix`, for `docs` use `docs`, you get the hang.
+Other types are `style`, `refactor` and `test`.
 If your change is breaking (in the semantic versioning sense) add an exclamation mark behind the scope, e.g. `feat(package)!: title`.
+This however, is not necessary, if this is the first release, as all changes would be considered breaking.
 
 If your issue proposes changes to multiple packages, or you don't know which package is affected, leave the `(PACKAGE_NAME)` part out, e.g. `feat: that one thing that's missing`.
 
@@ -21,8 +22,8 @@ If your issue proposes changes to multiple packages, or you don't know which pac
 ## Code Contributions
 ### Opening an Issue
 
-Before you hand in a PR, open an issue and tell us you'll be handling in an PR.
-This gives us the ability to point out important things you should keep in mind and to tell you if such a feature would fit into this project at all.
+Before you hand in a PR, open an issue describing what you want to change and tell us you'll be handing in a PR for it.
+This gives us the ability to point out important things you should keep in mind and give you feedback for your idea before you get to implementing the feature.
 
 ### Committing
 
@@ -36,7 +37,7 @@ Just have a look at the [quick start guide](https://www.conventionalcommits.org/
 The scope is typically the package name, but for non-go files appropriate scopes may also be: `git`, `README` or `go.mod`.
 If none match what you are doing, just think of something.
 The types we use are: `fix`, `feat`, `docs`, `style`, `refactor` and `test`.
-Breaking changes should be signaled using a `!`, and not by the footer.
+Breaking changes are signaled using a `!`, and not by a footer.
 
 ### Fixing a Bug
 
@@ -86,8 +87,9 @@ The struct used in tables is always anonymous.
 Every case in a table should run in its own subtest (`t.Run`).
 Additionally, if there are multiple tables, each table has its own subtest, in which he calls his cases.
 
+
 ### Opening a Pull Request
 
-When opening a pull request, merge against `develop` and use the title of the issue as the PR title.
+When opening a pull request, merge against `develop` and use the title of the issue as PR title.
 
 A Pull Request must pass all test, to be merged.

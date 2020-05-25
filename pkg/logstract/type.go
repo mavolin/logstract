@@ -1,5 +1,6 @@
 package logstract
 
+// Lvl is the level of severity of a log level.
 type Lvl uint8
 
 const (

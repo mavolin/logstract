@@ -1,36 +1,24 @@
 # logstract
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/mavolin/logstract)](https://goreportcard.com/report/github.com/mavolin/logstract)
+[![godoc](https://img.shields.io/badge/godoc-reference-blue)](https://pkg.go.dev/github.com/mavolin/logstract)
+[![GitHub](https://img.shields.io/github/license/mavolin/dismock)](https://github.com/mavolin/logstract/blob/master/LICENSE)
+
+-----
+
 Logstract is an abstract logger for structured logging.
 It aims to provide maximum compatibility with as many structured logging frameworks, while introducing as low of an overhead as possible.
-Additionally, there are some default implementations so whoever uses your library can get started without a hassle.
-
-## Default Implementations
-
-To get you started more quickly, we have created default implementations.
-Currently, the two most-starred structured loggers are supported, namely [zap](https://github.com/uber-go/zap) and [logrus](https://github.com/sirupsen/logrus).
-Their implementations can be found in the `impl` package.
 
 ## I want to use logstract in my library, what do I need to do?
-### Implementing logstract
 
-Using logstract is simple.
-Typicallly, you create an exposed variable `Logger *Logger` with `logstract.Default` as value, in your core package.
-This ensures that you can always log, without risking a nil dereference panic.
+Nothing. 
+Logstract was designed to be as easy to use as possible.
+This means you have to create no global variable or anything like that, that might cause you headaches about import cycles.
+Instead, you just call logstract's exposed functions:
 
-```go
-package core
-
-import "github.com/mavolin/logstract/pkg/logstract"
-
-var Logger = logstract.Default
-```
-
-### Logging
-
-If you want to log, simply use your `Logger` variable:
 ```go
 func Icecream(free bool, flavor string)  {
-    Logger.
+    logstract.
         WithFields(logstract.Fields{
             "free": free,
             "flavor": flavor,
@@ -38,57 +26,108 @@ func Icecream(free bool, flavor string)  {
         Debug("yay, ice cream!")
     
     if free {
-        Logger.Warn("free icecream for everyone, gonna be expensive 🍦")
+        logstract.Warn("free icecream for everyone, gonna be expensive 🍦")
     }
 
     if rand.Float64() <= 0.99 {
-        Logger.
+        logstract.
             WithField("mc_donalds", true).
             Fatal("the ice cream is machine broken")
     } else {
-        Logger.Infof("%s ice cream ready for pickup", flavor)
+        logstract.Infof("%s ice cream ready for pickup", flavor)
     }
 }
 ```
 
-Logs will only be created, if the user replaces `logstract.Default` with an actual `Logger` implementation.
+Logs will only be created, if the user replaces `logstract.Logger` variable with an implementation.
+
 ## I want to use a library that uses logstract, what do I need to do?
 
-Follow these steps, and get your library hooked up with your favorite logger in no time.
+To use logstract, simply create a `LogFunc` for your favorite logger and store it in the `logstract.Logger` variable.
 
-### Using a natively supported logger
+Below are examples for both [zap](https://github.com/uber-go/zap) and [logrus](https://github.com/sirupsen/logrus/), however, here are no default implementations on purpose to make logstract dependency free, but creating a `LogFunc` is no rocket science.
 
-This makes it even more easy:
+### Examples
 
-Just set the `Logger` variable of your library to one of the default implementations:
+#### logrus
 
-Example:
 ```go
-func main() {
-    l, _ := zap.NewProduction()
-    sugar := l.Sugar()
-
-    thatcoollib.Logger = logstract.New(impl.Zap(sugar))
+func Logrus(lvl logstract.Lvl, msg string, fields logstract.Fields) {
+    e := logrus.NewEntry(logrus.StandardLogger())
+    
+    if len(fields) != 0 {
+        e.WithFields(logrus.Fields(fields))
+    }
+    
+    switch lvl {
+    case logstract.LvlDebug:
+        e.Debug(msg)
+    case logstract.LvlInfo:
+        e.Info(msg)
+    case logstract.LvlWarn:
+        e.Warn(msg)
+    case logstract.LvlError:
+        e.Error(msg)
+    case logstract.LvlFatal:
+        e.Panic(msg)
+    }
 }
 ```
 
-### My logger isn't natively supported
+#### zap
 
-Fear not!
-Have a look at one of the default implementations (found in pkg/impl), and you'll have a wrapper up and running in no time.
+```go
+func Zap() logstract.LogFunc {
+    l, _ := zap.NewProduction()
+    sugar := l.Sugar()
+
+    return func(lvl logstract.Lvl, msg string, fields logstract.Fields) {
+        s := make([]interface{}, 0)
+        
+        if len(fields) != 0 {
+            s = fieldsToSlice(fields)
+        }
+        
+        switch lvl {
+        case logstract.LvlDebug:
+            l.Debugw(msg, s)
+        case logstract.LvlInfo:
+            l.Infow(msg, s)
+        case logstract.LvlWarn:
+            l.Warnw(msg, s)
+        case logstract.LvlError:
+            l.Errorw(msg, s)
+        case logstract.LvlFatal:
+            l.Panicw(msg, s)
+        }
+    }
+}
+
+// fieldsToSlice converts the passed Fields to a slice, as used by zap.
+func fieldsToSlice(f logstract.Fields) (s []interface{}) {
+    s = make([]interface{}, 0, 2*len(f))
+    
+    for k, v := range f {
+        s = append(s, k, v)
+    }
+    
+    return
+}
+```
+
 
 ### The logger I want to use does not feature structured logging. What should I do?
 
 The author of the library your're using most likely choose logstract because of it's structured logging capabilities, as structured logging has mostly proven it's dominance over the more conservative just-message logging, at least in the go world.
 
-If you can, change your logger to one, supporting structured logging.
-However, if you don't want to switch, in my opinion your best option is to add the fields in parentheses behind:
+If you can, change your logger to structured logger.
+However, if you don't want to switch, in my opinion your best option is to add the fields in a parentheses behind:
 ```go
 func MyLogFunc(lvl logstract.Lvl, msg string, fields logstract.Fields) {
     if fields != nil {
         msg += " (" + joinFields(fields, ": ", ", ") + ")"
     }
-
+    
     switch lvl {
     case logstract.LvlDebug:
         myLogger.Debug(msg)
@@ -100,25 +139,25 @@ func MyLogFunc(lvl logstract.Lvl, msg string, fields logstract.Fields) {
 
 func joinFields(f logstract.Fields, keyValSep, entrySep string) string {
     n := (len(f) - 1) * (len(keyValSep) + len(entrySep))
-
+    
     for k, v := range f {
         n += len(k) + len(v)
     }
-
+    
     var b strings.Builder
     b.Grow(n)
     
     first := true
-
+    
     for k, v := range f {
         if !first {
             b.WriteString(entrySep)
         }
-
-    	b.WriteString(k)
-    	b.WriteString(keyValSep)
-    	b.WriteString(v)
-
+        
+        b.WriteString(k)
+        b.WriteString(keyValSep)
+        b.WriteString(v)
+        
         first = false
     }
 }

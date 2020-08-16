@@ -137,28 +137,19 @@ func MyLogFunc(lvl logstract.Lvl, msg string, fields logstract.Fields) {
     }
 }
 
-func joinFields(f logstract.Fields, keyValSep, entrySep string) string {
-    n := (len(f) - 1) * (len(keyValSep) + len(entrySep))
-    
-    for k, v := range f {
-        n += len(k) + len(v)
-    }
-    
-    var b strings.Builder
-    b.Grow(n)
-    
+func joinFields(f logstract.Fields, keyValSep, entrySep string) (s string) {    
     first := true
     
     for k, v := range f {
         if !first {
-            b.WriteString(entrySep)
+            s += entrySep
         }
         
-        b.WriteString(k)
-        b.WriteString(keyValSep)
-        b.WriteString(v)
+        s += k + keyValSep + fmt.Sprimtf("%+v", v")
         
         first = false
     }
+    
+    return
 }
 ```

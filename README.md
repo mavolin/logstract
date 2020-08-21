@@ -12,8 +12,7 @@ It aims to provide maximum compatibility with as many structured logging framewo
 ## I want to use logstract in my library, what do I need to do?
 
 Nothing. 
-Logstract was designed to be as easy to use as possible.
-This means you have to create no global variable or anything like that, that might cause you headaches about import cycles.
+Logstract was designed to be as easy to use as possible, this means you have to create no global variable, that might cause you headaches about import cycles.
 Instead, you just call logstract's exposed functions:
 
 ```go
@@ -39,13 +38,14 @@ func Icecream(free bool, flavor string)  {
 }
 ```
 
-Logs will only be created, if the user replaces `logstract.Logger` variable with an implementation.
+By default, `logstract.Logger` is a no-op logger.
+Therefore, logs will only be creates if it is replaced with an actual implementation.
 
 ## I want to use a library that uses logstract, what do I need to do?
 
-To use logstract, simply create a `LogFunc` for your favorite logger and store it in the `logstract.Logger` variable.
+To use logstract, simply create a `LogFunc` for your logger and store it in the `logstract.Logger` variable.
 
-Below are examples for both [zap](https://github.com/uber-go/zap) and [logrus](https://github.com/sirupsen/logrus/), however, here are no default implementations on purpose to make logstract dependency free, but creating a `LogFunc` is no rocket science.
+Below are examples for both [zap](https://github.com/uber-go/zap) and [logrus](https://github.com/sirupsen/logrus/), however, here are no default implementations to keep logstract dependency free.
 
 ### Examples
 

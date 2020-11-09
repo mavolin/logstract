@@ -8,17 +8,13 @@ var Logger LogFunc = func(_ Lvl, _ string, _ Fields) {}
 // WithField creates an Entry with the passed field.
 func WithField(k string, v interface{}) *Entry {
 	return &Entry{
-		fields: Fields{
-			k: v,
-		},
+		fields: Fields{k: v},
 	}
 }
 
 // WithFields creates an Entry with the passed Fields.
 func WithFields(f Fields) *Entry {
-	return &Entry{
-		fields: f,
-	}
+	return &Entry{fields: f}
 }
 
 // Debug creates a debug-level log entry, using the passed message.
@@ -79,18 +75,33 @@ type Entry struct {
 
 // WithField add the passed field to the entry.
 func (e *Entry) WithField(k string, v interface{}) *Entry {
-	e.fields[k] = v
+	cp := new(Entry)
+	cp.fields = make(Fields, len(e.fields)+1)
 
-	return e
+	for k, v := range e.fields {
+		cp.fields[k] = v
+	}
+
+	cp.fields[k] = v
+
+	return cp
 }
 
 // WithFields creates an Entry with the passed Fields.
 func (e *Entry) WithFields(f Fields) *Entry {
+	cp := new(Entry)
+
+	cp.fields = make(Fields, len(f)+len(cp.fields))
+
+	for k, v := range e.fields {
+		e.fields[k] = v
+	}
+
 	for k, v := range f {
 		e.fields[k] = v
 	}
 
-	return e
+	return cp
 }
 
 // Debug creates a debug-level log entry, using the passed message.
